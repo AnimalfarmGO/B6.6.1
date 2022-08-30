@@ -1,0 +1,41 @@
+---
+  - hosts: "remote-host"
+    gather_facts: no
+    roles:
+      - vsftpd
+
+#/ansible/inventory/hosts
+
+[remote-host]
+130.193.39.79
+
+[all]
+84.201.156.225
+130.193.39.79
+
+#/ansible/roles/vsftpd/tasks/main.yml
+
+- name: Install/enable epel-repo
+  yum:
+    name:
+      - epel-release
+    state: present
+- name: Install vsftpd
+  yum:
+    name:
+      - vsftpd
+    state: present
+    
+- name: copy-config
+  template:
+    src: vsftpd.conf.j2
+    dest: /etc/vsftpd/vsftpd.conf
+    owner: root
+    group: root
+    backup: no
+
+- name: Start vsftpd service
+  service:
+    name: vsftpd
+    state: started
+    enabled: yes
